@@ -44,7 +44,7 @@ const Register: React.FC = () => {
 
     try {
       // Primero registrar el usuario
-      const userResponse = await api.post('/auth/register', {
+      const userResponse = await api.post('/api/auth/register', {
         username: formData.username,
         email: formData.email,
         password: formData.password,
@@ -52,7 +52,7 @@ const Register: React.FC = () => {
       });
 
       // Luego crear el cliente asociado
-      await api.post('/clientes', {
+      await api.post('/api/clientes', {
         nombre: formData.nombre,
         telefono: formData.telefono,
         email: formData.email,
@@ -63,8 +63,8 @@ const Register: React.FC = () => {
       });
 
       navigate('/login');
-    } catch (err) {
-      setError('Error al registrar el usuario. Por favor, intente nuevamente.');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Error al registrar el usuario. Por favor, intente nuevamente.');
       console.error('Error en el registro:', err);
     }
   };
@@ -187,4 +187,4 @@ const Register: React.FC = () => {
   );
 };
 
-export default Register; 
+export default Register;

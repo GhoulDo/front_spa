@@ -56,13 +56,34 @@ const Mascotas: React.FC = () => {
 
   const fetchMascotas = async () => {
     try {
-      const response = await api.get('/mascotas');
-      setMascotas(response.data);
-    } catch (error) {
+      // Verificar que haya un token disponible
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No hay token de autenticación');
+        setSnackbar({
+          open: true,
+          message: 'No hay sesión activa. Por favor, inicie sesión nuevamente.',
+          severity: 'error',
+        });
+        return;
+      }
+      
+      console.log('Solicitando mascotas a la API');
+      
+      // Realizar petición GET a /api/mascotas con el token
+      const response = await api.get('/api/mascotas');
+      
+      console.log('Mascotas recibidas:', response.data);
+      setMascotas(response.data || []);
+    } catch (error: any) {
       console.error('Error al cargar mascotas:', error);
+      
+      const errorMessage = error.response?.data?.message || 
+                          'Error al cargar mascotas. Verifica tu conexión o sesión.';
+      
       setSnackbar({
         open: true,
-        message: 'Error al cargar las mascotas',
+        message: errorMessage,
         severity: 'error',
       });
     }
@@ -111,36 +132,47 @@ const Mascotas: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Armar datos según el formato de la API
       const mascotaData = {
-        ...formData,
+        nombre: formData.nombre,
+        tipo: formData.tipo,
+        raza: formData.raza,
         edad: parseInt(formData.edad),
-        cliente: {
-          id: user?.id || '' // Obtener el ID del usuario actual desde el contexto de autenticación
-        }
       };
-
+      
+      console.log('Enviando datos de mascota:', mascotaData);
+      
       if (editingMascota) {
-        await api.put(`/mascotas/${editingMascota.id}`, mascotaData);
+        // Actualizar mascota existente
+        await api.put(`/api/mascotas/${editingMascota.id}`, mascotaData);
         setSnackbar({
           open: true,
           message: 'Mascota actualizada correctamente',
           severity: 'success',
         });
       } else {
-        await api.post('/mascotas', mascotaData);
+        // Crear nueva mascota
+        const response = await api.post('/api/mascotas', mascotaData);
+        console.log('Mascota creada:', response.data);
         setSnackbar({
           open: true,
           message: 'Mascota creada correctamente',
           severity: 'success',
         });
       }
+      
+      // Recargar lista de mascotas
       fetchMascotas();
       handleCloseDialog();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al guardar mascota:', error);
+      
+      const errorMessage = error.response?.data?.message || 
+                          'Error al guardar la mascota. Inténtalo de nuevo.';
+      
       setSnackbar({
         open: true,
-        message: 'Error al guardar la mascota',
+        message: errorMessage,
         severity: 'error',
       });
     }
@@ -148,18 +180,23 @@ const Mascotas: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await api.delete(`/mascotas/${id}`);
+      // Eliminar mascota
+      await api.delete(`/api/mascotas/${id}`);
       setSnackbar({
         open: true,
         message: 'Mascota eliminada correctamente',
         severity: 'success',
       });
       fetchMascotas();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al eliminar mascota:', error);
+      
+      const errorMessage = error.response?.data?.message || 
+                          'Error al eliminar la mascota.';
+      
       setSnackbar({
         open: true,
-        message: 'Error al eliminar la mascota',
+        message: errorMessage,
         severity: 'error',
       });
     }

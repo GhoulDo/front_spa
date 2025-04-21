@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface User {
+export interface User {
   id: string;
   username: string;
   email: string;
@@ -8,35 +8,60 @@ interface User {
 }
 
 interface AuthState {
-  token: string | null;
   user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
 }
 
-const initialState: AuthState = {
-  token: null,
-  user: null,
-  isAuthenticated: false,
+// Intentar recuperar el usuario y token del localStorage al iniciar
+const loadState = (): AuthState => {
+  try {
+    const token = localStorage.getItem('token');
+    const userJSON = localStorage.getItem('user');
+    const user = userJSON ? JSON.parse(userJSON) : null;
+    
+    return {
+      user,
+      token,
+      isAuthenticated: !!token,
+    };
+  } catch (e) {
+    console.error('Error loading auth state:', e);
+    return {
+      user: null,
+      token: null,
+      isAuthenticated: false,
+    };
+  }
 };
+
+const initialState: AuthState = loadState();
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setCredentials: (state: AuthState, action: PayloadAction<{ token: string; user: User }>) => {
-      state.token = action.payload.token;
-      state.user = action.payload.user;
+    setCredentials: (state, action: PayloadAction<{ user: User; token: string }>) => {
+      const { user, token } = action.payload;
+      state.user = user;
+      state.token = token;
       state.isAuthenticated = true;
-      localStorage.setItem('token', action.payload.token);
+      
+      // Guardar en localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
     },
-    logout: (state: AuthState) => {
-      state.token = null;
+    logout: (state) => {
       state.user = null;
+      state.token = null;
       state.isAuthenticated = false;
+      
+      // Limpiar localStorage
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
     },
   },
 });
 
 export const { setCredentials, logout } = authSlice.actions;
-export default authSlice.reducer; 
+export default authSlice.reducer;

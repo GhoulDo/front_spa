@@ -81,7 +81,7 @@ const Citas: React.FC = () => {
 
   const fetchCitas = async () => {
     try {
-      const response = await api.get('/citas');
+      const response = await api.get('/api/citas');
       setCitas(response.data);
     } catch (error) {
       console.error('Error al cargar citas:', error);
@@ -95,7 +95,7 @@ const Citas: React.FC = () => {
 
   const fetchMascotas = async () => {
     try {
-      const response = await api.get('/mascotas');
+      const response = await api.get('/api/mascotas');
       setMascotas(response.data);
     } catch (error) {
       console.error('Error al cargar mascotas:', error);
@@ -104,7 +104,7 @@ const Citas: React.FC = () => {
 
   const fetchServicios = async () => {
     try {
-      const response = await api.get('/servicios');
+      const response = await api.get('/api/servicios');
       setServicios(response.data);
     } catch (error) {
       console.error('Error al cargar servicios:', error);
@@ -163,14 +163,14 @@ const Citas: React.FC = () => {
       };
 
       if (editingCita) {
-        await api.put(`/citas/${editingCita.id}`, citaData);
+        await api.put(`/api/citas/${editingCita.id}`, citaData);
         setSnackbar({
           open: true,
           message: 'Cita actualizada correctamente',
           severity: 'success',
         });
       } else {
-        await api.post('/citas', citaData);
+        await api.post('/api/citas', citaData);
         setSnackbar({
           open: true,
           message: 'Cita creada correctamente',
@@ -191,7 +191,7 @@ const Citas: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await api.delete(`/citas/${id}`);
+      await api.delete(`/api/citas/${id}`);
       setSnackbar({
         open: true,
         message: 'Cita eliminada correctamente',
@@ -210,7 +210,7 @@ const Citas: React.FC = () => {
 
   const handleCancelarCita = async (id: string) => {
     try {
-      await api.put(`/citas/${id}`, { estado: 'CANCELADA' });
+      await api.put(`/api/citas/${id}`, { estado: 'CANCELADA' });
       setSnackbar({
         open: true,
         message: 'Cita cancelada correctamente',
@@ -380,4 +380,4 @@ const Citas: React.FC = () => {
   );
 };
 
-export default Citas; 
+export default Citas;

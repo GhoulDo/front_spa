@@ -11,19 +11,18 @@ import {
   Grid,
   Link,
   Avatar,
-  useTheme,
   ThemeProvider,
   createTheme,
   InputAdornment,
   Alert,
-  Snackbar
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../store/authSlice';
-import api from '../api/apiConfig';
+import api, { setAuthToken } from '../api/apiConfig';
 import { Person as PersonIcon, Lock as LockIcon, Pets as PetsIcon } from '@mui/icons-material';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface LoginResponse {
   token: string;
   user: {
@@ -117,6 +116,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -125,30 +125,56 @@ const Login: React.FC = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
+      setLoading(true);
+      setError('');
+      
       try {
-        // La API espera exactamente este formato según la documentación
-        // Importante: enviar email, no username
         const loginData = {
-          email: values.username, // Usamos el campo username como email
-          password: values.password
+          email: values.username,
+          password: values.password,
         };
         
-        console.log('Enviando datos de login:', loginData);
+        console.log('Enviando solicitud de login a la API');
         
-        // Enviar los datos en el formato correcto
-        const response = await api.post('/auth/login', loginData);
+        // Hacer la solicitud de login a la API
+        const response = await api.post('/api/auth/login', loginData);
         
-        console.log('Respuesta del servidor:', response.data);
+        console.log('Respuesta de login recibida:', response.data);
         
-        const { token, user } = response.data;
-        dispatch(setCredentials({ token, user }));
-        navigate('/dashboard');
+        // Verificar si el token está presente en la respuesta
+        if (response.data && response.data.token) {
+          // Guardar el token y configurarlo para futuras peticiones
+          setAuthToken(response.data.token);
+          
+          // Extraer información del usuario desde el token o respuesta
+          const user = {
+            id: response.data.userId || '1',
+            username: values.username,
+            email: values.username,
+            rol: response.data.rol || 'CLIENTE',
+          };
+          
+          // Guardar en Redux
+          dispatch(setCredentials({ 
+            token: response.data.token, 
+            user 
+          }));
+          
+          console.log('Login exitoso, redirigiendo al dashboard');
+          navigate('/dashboard');
+        } else {
+          setError('Formato de respuesta inesperado. No se recibió token de autenticación.');
+        }
       } catch (error: any) {
-        console.error('Error de login detallado:', error.response?.data || error.message);
-        setError(
-          error.response?.data?.message || 
-          'Error al iniciar sesión. Verifica tus credenciales.'
-        );
+        console.error('Error durante el login:', error);
+        
+        // Mostrar mensaje de error adecuado
+        const errorMessage = error.response?.data?.message || 
+                            'Error al iniciar sesión. Por favor, verifica tus credenciales.';
+        
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
       }
     },
   });
@@ -290,7 +316,7 @@ const Login: React.FC = () => {
                     type="submit"
                     fullWidth
                     variant="contained"
-                    disabled={formik.isSubmitting}
+                    disabled={formik.isSubmitting || loading}
                     sx={{ 
                       mt: 4, 
                       mb: 2,
@@ -298,7 +324,7 @@ const Login: React.FC = () => {
                       fontSize: '1.1rem',
                     }}
                   >
-                    {formik.isSubmitting ? 'Iniciando...' : 'Ingresar'}
+                    {loading ? 'Iniciando...' : 'Ingresar'}
                   </Button>
                   
                   <Grid container justifyContent="center" sx={{ mt: 2 }}>

@@ -97,7 +97,7 @@ const Facturacion: React.FC = () => {
 
   const fetchFacturas = async () => {
     try {
-      const response = await api.get('/facturas');
+      const response = await api.get('/api/facturas');
       setFacturas(response.data);
     } catch (error) {
       console.error('Error al cargar facturas:', error);
@@ -111,7 +111,7 @@ const Facturacion: React.FC = () => {
 
   const fetchClientes = async () => {
     try {
-      const response = await api.get('/clientes');
+      const response = await api.get('/api/clientes');
       setClientes(response.data);
     } catch (error) {
       console.error('Error al cargar clientes:', error);
@@ -120,7 +120,7 @@ const Facturacion: React.FC = () => {
 
   const fetchProductos = async () => {
     try {
-      const response = await api.get('/productos');
+      const response = await api.get('/api/productos');
       setProductos(response.data);
     } catch (error) {
       console.error('Error al cargar productos:', error);
@@ -129,7 +129,7 @@ const Facturacion: React.FC = () => {
 
   const fetchServicios = async () => {
     try {
-      const response = await api.get('/servicios');
+      const response = await api.get('/api/servicios');
       setServicios(response.data);
     } catch (error) {
       console.error('Error al cargar servicios:', error);
@@ -208,14 +208,14 @@ const Facturacion: React.FC = () => {
       };
 
       if (editingFactura) {
-        await api.put(`/facturas/${editingFactura.id}`, facturaData);
+        await api.put(`/api/facturas/${editingFactura.id}`, facturaData);
         setSnackbar({
           open: true,
           message: 'Factura actualizada correctamente',
           severity: 'success',
         });
       } else {
-        await api.post('/facturas', facturaData);
+        await api.post('/api/facturas', facturaData);
         setSnackbar({
           open: true,
           message: 'Factura creada correctamente',
@@ -236,7 +236,7 @@ const Facturacion: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await api.delete(`/facturas/${id}`);
+      await api.delete(`/api/facturas/${id}`);
       setSnackbar({
         open: true,
         message: 'Factura eliminada correctamente',
@@ -255,7 +255,7 @@ const Facturacion: React.FC = () => {
 
   const handleDownloadPDF = async (id: string) => {
     try {
-      const response = await api.get(`/facturas/${id}/pdf`, {
+      const response = await api.get(`/api/facturas/${id}/pdf`, {
         responseType: 'blob',
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));

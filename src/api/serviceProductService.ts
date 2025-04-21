@@ -1,5 +1,5 @@
 import api from './apiConfig';
-import { Service, ServiceForm, Product, ProductForm } from '../types';
+import { Service, Product, ServiceForm, ProductForm } from '../types';
 
 export const serviceProductService = {
   // Servicios
@@ -18,7 +18,7 @@ export const serviceProductService = {
     return response.data;
   },
 
-  updateService: async (id: string, data: Partial<ServiceForm>): Promise<Service> => {
+  updateService: async (id: string, data: ServiceForm): Promise<Service> => {
     const response = await api.put(`/servicios/${id}`, data);
     return response.data;
   },
@@ -43,17 +43,12 @@ export const serviceProductService = {
     return response.data;
   },
 
-  updateProduct: async (id: string, data: Partial<ProductForm>): Promise<Product> => {
+  updateProduct: async (id: string, data: ProductForm): Promise<Product> => {
     const response = await api.put(`/productos/${id}`, data);
     return response.data;
   },
 
   deleteProduct: async (id: string): Promise<void> => {
     await api.delete(`/productos/${id}`);
-  },
-
-  updateStock: async (id: string, quantity: number): Promise<Product> => {
-    const response = await api.put(`/productos/${id}/stock`, { quantity });
-    return response.data;
   }
-}; 
+};

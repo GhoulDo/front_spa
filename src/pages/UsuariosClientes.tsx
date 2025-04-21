@@ -74,7 +74,7 @@ const UsuariosClientes: React.FC = () => {
 
   const fetchUsuarios = async () => {
     try {
-      const response = await api.get('/usuarios');
+      const response = await api.get('/api/usuarios');
       setUsuarios(response.data);
     } catch (error) {
       console.error('Error al cargar usuarios:', error);
@@ -88,7 +88,7 @@ const UsuariosClientes: React.FC = () => {
 
   const fetchClientes = async () => {
     try {
-      const response = await api.get('/clientes');
+      const response = await api.get('/api/clientes');
       setClientes(response.data);
     } catch (error) {
       console.error('Error al cargar clientes:', error);
@@ -162,7 +162,7 @@ const UsuariosClientes: React.FC = () => {
     try {
       if (tabValue === 0) { // Usuarios
         if (editingItem) {
-          await api.put(`/usuarios/${editingItem.id}`, {
+          await api.put(`/api/usuarios/${editingItem.id}`, {
             username: formData.username,
             email: formData.email,
             rol: formData.rol,
@@ -173,7 +173,7 @@ const UsuariosClientes: React.FC = () => {
             severity: 'success',
           });
         } else {
-          await api.post('/auth/register', {
+          await api.post('/api/auth/register', {
             username: formData.username,
             email: formData.email,
             password: formData.password,
@@ -188,7 +188,7 @@ const UsuariosClientes: React.FC = () => {
         fetchUsuarios();
       } else { // Clientes
         if (editingItem) {
-          await api.put(`/clientes/${editingItem.id}`, {
+          await api.put(`/api/clientes/${editingItem.id}`, {
             nombre: formData.nombre,
             telefono: formData.telefono,
             email: formData.email,
@@ -200,7 +200,7 @@ const UsuariosClientes: React.FC = () => {
             severity: 'success',
           });
         } else {
-          await api.post('/clientes', {
+          await api.post('/api/clientes', {
             nombre: formData.nombre,
             telefono: formData.telefono,
             email: formData.email,
@@ -228,7 +228,7 @@ const UsuariosClientes: React.FC = () => {
   const handleDelete = async (id: string, isUsuario: boolean) => {
     try {
       if (isUsuario) {
-        await api.delete(`/usuarios/${id}`);
+        await api.delete(`/api/usuarios/${id}`);
         setSnackbar({
           open: true,
           message: 'Usuario eliminado correctamente',
@@ -236,7 +236,7 @@ const UsuariosClientes: React.FC = () => {
         });
         fetchUsuarios();
       } else {
-        await api.delete(`/clientes/${id}`);
+        await api.delete(`/api/clientes/${id}`);
         setSnackbar({
           open: true,
           message: 'Cliente eliminado correctamente',
@@ -461,4 +461,4 @@ const UsuariosClientes: React.FC = () => {
   );
 };
 
-export default UsuariosClientes; 
+export default UsuariosClientes;

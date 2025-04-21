@@ -61,7 +61,7 @@ const ServiciosProductos: React.FC = () => {
 
   const fetchServicios = async () => {
     try {
-      const response = await api.get('/servicios');
+      const response = await api.get('/api/servicios');
       setServicios(response.data);
     } catch (error) {
       console.error('Error al cargar servicios:', error);
@@ -75,7 +75,7 @@ const ServiciosProductos: React.FC = () => {
 
   const fetchProductos = async () => {
     try {
-      const response = await api.get('/productos');
+      const response = await api.get('/api/productos');
       setProductos(response.data);
     } catch (error) {
       console.error('Error al cargar productos:', error);
@@ -137,14 +137,14 @@ const ServiciosProductos: React.FC = () => {
         };
 
         if (editingItem) {
-          await api.put(`/servicios/${editingItem.id}`, servicioData);
+          await api.put(`/api/servicios/${editingItem.id}`, servicioData);
           setSnackbar({
             open: true,
             message: 'Servicio actualizado correctamente',
             severity: 'success',
           });
         } else {
-          await api.post('/servicios', servicioData);
+          await api.post('/api/servicios', servicioData);
           setSnackbar({
             open: true,
             message: 'Servicio creado correctamente',
@@ -161,14 +161,14 @@ const ServiciosProductos: React.FC = () => {
         };
 
         if (editingItem) {
-          await api.put(`/productos/${editingItem.id}`, productoData);
+          await api.put(`/api/productos/${editingItem.id}`, productoData);
           setSnackbar({
             open: true,
             message: 'Producto actualizado correctamente',
             severity: 'success',
           });
         } else {
-          await api.post('/productos', productoData);
+          await api.post('/api/productos', productoData);
           setSnackbar({
             open: true,
             message: 'Producto creado correctamente',
@@ -191,7 +191,7 @@ const ServiciosProductos: React.FC = () => {
   const handleDelete = async (id: string, isServicio: boolean) => {
     try {
       if (isServicio) {
-        await api.delete(`/servicios/${id}`);
+        await api.delete(`/api/servicios/${id}`);
         setSnackbar({
           open: true,
           message: 'Servicio eliminado correctamente',
@@ -199,7 +199,7 @@ const ServiciosProductos: React.FC = () => {
         });
         fetchServicios();
       } else {
-        await api.delete(`/productos/${id}`);
+        await api.delete(`/api/productos/${id}`);
         setSnackbar({
           open: true,
           message: 'Producto eliminado correctamente',

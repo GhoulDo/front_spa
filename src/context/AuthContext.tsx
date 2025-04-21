@@ -1,11 +1,5 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  rol: string;
-}
+import { User } from '../types';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -64,4 +58,4 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 };
 
-export const useAuth = () => useContext(AuthContext); 
+export const useAuth = () => useContext(AuthContext);
